@@ -4,8 +4,7 @@ import db from "./database/connection"
 import fetch from "node-fetch";
 import { Client, Message, Guild } from "discord.js";
 const client = new Client();
-import {discordGuildID} from "../configuracao"
-import color from "./console"
+import color from "./console" 
 
 interface ResponseAlbion {
   Name: string
