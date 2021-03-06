@@ -1,0 +1,44 @@
+{
+  "name": "wada9",
+  "version": "1.0.0",
+  "main": "index.js",
+  "desciption": "Auth wadawell bot",
+  "scripts": {
+    "test": "tsnd  ./src/bot.ts",
+    "dev": "tsnd --transpile-only --ignore-watch node_modules --respawn ./src/bot.ts",
+    "start": "ts-node ./src/bot.ts",
+    "knex:migrate": "knex --knexfile knexFile.ts migrate:latest",
+    "knex:migrate:rollback": "knex --knexfile knexFile.ts migrate:rollback"
+  },
+  "keywords": [
+    "agendei",
+    "hiki9"
+  ],
+  "author": "Pauls",
+  "license": "ISC",
+  "description": "Bot",
+  "devDependencies": {
+    "@types/ajv": "^1.0.0"
+  },
+  "dependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cors": "^2.8.7",
+    "@types/express": "^4.17.7",
+    "@types/express-session": "^1.17.0",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/multer": "^1.4.4",
+    "@types/node-fetch": "^2.5.7",
+    "ajv": "^7.1.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "discord.js": "^12.5.1",
+    "knex": "^0.21.2",
+    "multer": "^1.4.2",
+    "node-fetch": "^2.6.1",
+    "process-env": "^2.0.2",
+    "sqlite3": "^5.0.0",
+    "ts-node-dev": "^1.0.0-pre.56",
+    "typescript": "^3.9.7"
+  }
+}
