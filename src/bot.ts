@@ -9,7 +9,8 @@ import color from "./console"
 const client = new Client();
 let embed
 client.on("ready", async () => {
-  console.log(`Logged in as ${client?.user?.tag}!`);
+  console.log(`${horarioAtual()} Logged in as ${client?.user?.tag}!`);
+
 
   //await handleDeleteMembers()
 
@@ -19,11 +20,27 @@ client.on("ready", async () => {
   
 })
 
-const removeRegister = async(id: number, discordId: string) => {
+const fix = (p: number) : string => {
+  return p >= 10 ? p.toString() : `0${p}`
+} 
+const horarioAtual = (): string => {
+  let data = new Date()
+  return "[" +
+    + fix(data.getDate())
+    + "/" 
+    + fix(data.getMonth() + 1)
+    + " " 
+    + fix(data.getHours())
+    + ":"
+    + fix(data.getMinutes())
+    + ":"
+    + fix(data.getSeconds())
+    + "] "
+}
+const removeRegister = async(discordId: string) => {
   
   await db("members")
     .where("discordId", "=", discordId)
-    .where("id", "=", id)
     .del()
 }
 const newRegister = async (nome: string, discordId: string, guildName: string, guildId: string): Promise<boolean> => {
@@ -90,9 +107,14 @@ const loadGuildInfo = (guildId: any, splited: string[]): any => {
   })
   return __return
 }
-client.on("guildMemberRemove", (member) => {
-  console.log("Esse membro saiu")
-  console.log(member)
+client.on("guildMemberRemove", async (member) => {
+  console.log(color.BgBlue, "O membro " + member.user?.username + "#" + member.user?.discriminator + " saiu do discord")
+ 
+  const discordId = member.user?.id || ""
+  
+  const response = await removeRegister(discordId)
+
+
 })
 client.on("message", async (discord) => {
 
@@ -178,6 +200,7 @@ client.on("message", async (discord) => {
               console.log(color.yellowN, `Membro ${pessoa} sendo registrado. discordId:  ${authorId}`);
 
               let isSetNameOk = true
+              let isSetRole = true
 
               await discord?.member?.setNickname(guildPrefix + " " + pessoa).catch((e)=> {
                 isSetNameOk = false
@@ -192,10 +215,31 @@ client.on("message", async (discord) => {
 
               if (!isSetNameOk) return false 
               //RECEBE PERMISSAO DA GUILD REFERENTE
-              const guildRoleIdResponse = await member?.roles.add(guildRoleId);
-              //RECEBE PERMISSAO DA ALIANCA
-              const allianceRoleIdResponse = await member?.roles.add("814324222058954753");
+              const guildRoleIdResponse = await member?.roles.add(guildRoleId).catch((e)=> {
+                isSetRole = false
 
+                console.log(color.BgCyan, e)
+                console.log(color.BgRed, "API Discord não respondeu @" + pessoa +"." );
+                embed = new MessageEmbed()
+                .setTitle('API Discord não respondeu @'+pessoa +'.')
+                .setColor(0xff0000)
+                .setDescription("Tente novamente mais tarde")
+                discord.channel.send(embed)
+                return false
+              });
+              //RECEBE PERMISSAO DA ALIANCA
+              const allianceRoleIdResponse = await member?.roles.add("814324222058954753").catch((e)=> {
+                isSetRole = false
+                console.log(color.BgCyan, e)
+                console.log(color.BgRed, "API Discord não respondeu @" + pessoa +"." );
+                embed = new MessageEmbed()
+                .setTitle('API Discord não respondeu @'+pessoa +'.')
+                .setColor(0xff0000)
+                .setDescription("Tente novamente mais tarde")
+                discord.channel.send(embed)
+                return false
+              });;
+              if (!isSetRole) return false 
 
               await newRegister(
                 pessoa.toUpperCase(), 
@@ -221,9 +265,9 @@ client.on("message", async (discord) => {
        
           } else {
             embed = new MessageEmbed()
-            .setTitle('Registro não encontrado')
+            .setTitle('Olá @' + pessoa + '. Registro não encontrado')
             .setColor(0xff0000)
-            .setDescription('Verifique se o formato está correto. Guilds disponíveis: \n**' + guildIdList.join("**, **") + "**\n\n" 
+            .setDescription('Nickname invalido ou nome de guild invalido. Verifique se o formato está correto. Guilds disponíveis: \n**' + guildIdList.join("**, **") + "**\n\n" 
             + `**Exemplo:**  !register TheWuiu wada`
             
             );
@@ -234,9 +278,9 @@ client.on("message", async (discord) => {
           console.log("RESPONSE ERROR, TRATAR DEPOIS");
           
           embed = new MessageEmbed()
-          .setTitle('Erro inesperado.')
+          .setTitle('Olá @' + pessoa + '. Registro não encontrado')
           .setColor(0xff0000)
-          .setDescription('Verifique se o formato está correto. Guilds disponíveis: \n**' + guildIdList.join("**, **") + "**\n\n" 
+          .setDescription('Nickname invalido ou nome de guild invalido. Verifique se o formato está correto. Guilds disponíveis: \n**' + guildIdList.join("**, **") + "**\n\n" 
           + `**Exemplo:**  !register TheWuiu wada`
           
           );
@@ -280,7 +324,7 @@ client.on("message", async (discord) => {
             membroAtual?.roles.remove(c.roleId)
           })
           
-          removeRegister(membro.id, membro.discordId)
+          removeRegister(membro.discordId)
         })
 
 
