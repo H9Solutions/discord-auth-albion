@@ -1,9 +1,6 @@
-
 import { guildId } from "./allianceGuilds";
 import db from "./database/connection"
 import fetch from "node-fetch";
-import { Client, Message, Guild } from "discord.js";
-const client = new Client();
 import color from "./console" 
 
 interface ResponseAlbion {
@@ -21,7 +18,7 @@ export interface MembersDataBase {
   guildId: string
 }
 const updateDatabase = async (registrado: MembersDataBase) => {
-  const updated = await db("members")
+  await db("members")
     .update({status: 0})
     .where("nome" , "=" , registrado.nome.toUpperCase())
     .where("id" , "=" , registrado.id)

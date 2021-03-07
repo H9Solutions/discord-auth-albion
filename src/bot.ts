@@ -1,9 +1,8 @@
-import Discord, { Client, Message  } from "discord.js";
+import  { Client, Message  } from "discord.js";
 const client = new Client();
 import fetch from "node-fetch";
 import { commandList, guildIdList, guildId } from "./allianceGuilds";
 import db from "./database/connection"
-import error from "./controllers/error"
 import handleDeleteMembers, {MembersDataBase} from "./handleSignedMembers"
 import color from "./console"
 import {
@@ -17,7 +16,7 @@ import {
 client.on("ready", async () => {
   console.log(`Logged in as ${client?.user?.tag}!`);
 
-  await handleDeleteMembers()
+ // await handleDeleteMembers()
 
   setTimeout(async () => {
     await handleDeleteMembers()
@@ -135,7 +134,7 @@ client.on("message", async (discord) => {
     switch (command) {
       case "register":
         try {
-          discord.channel.send("Aguarde... Estamos verificando... Pode levar alguns minutos...")
+          discord.channel.send("Aguarde, estamos verificando. Poderá levar alguns minutos...")
           const response = await fetch(
             apiBaseUrl + `/guilds/${guildToken}/members`
           );
@@ -154,15 +153,15 @@ client.on("message", async (discord) => {
               const authorId = discord.author.id;
               const member = discord?.guild?.member(authorId);
 
-              console.log("AUTHOR ID ", authorId);
-              console.log("MEMBRO CONSTRUIDO ", member);
+              console.log(color.yellowN, `Membro ${pessoa} sendo registrado. discordId:  ${authorId}`);
 
               discord?.member?.setNickname(guildPrefix + " " + pessoa);
 
               //RECEBE PERMISSAO DA GUILD REFERENTE
-              member?.roles.add(guildRoleId);
+              const guildRoleIdResponse = await member?.roles.add(guildRoleId);
               //RECEBE PERMISSAO DA ALIANCA
-              member?.roles.add("814324222058954753");
+              const allianceRoleIdResponse = await member?.roles.add("814324222058954753");
+
 
               await newRegister(
                 pessoa.toUpperCase(), 
@@ -171,13 +170,14 @@ client.on("message", async (discord) => {
                 guildToken
               )
 
-              discord.channel.send("Seja bem vindo " + pessoa)
+              console.log(color.cyanN, `Membro ${pessoa} registrado. discordId:  ${authorId}`);
+              discord.channel.send("Seja bem vindo " + pessoa + ".")
 
             } catch (e) {
               
-              console.log(error.discordAddError);
+              discord.channel.send("Não foi possível adicionar o membro " + pessoa)
+      
             }
-            discord.channel.send("Encontrei o membro " + pessoa)
        
           } else discord.channel.send("N encontrei ngm")
         } catch (e) {
@@ -230,7 +230,6 @@ client.on("message", async (discord) => {
         discord.channel.send("Comandos disponíveis: " + commandList.join(", "))
     }
 
-    console.log(command);
   } catch (e) {
     console.log("ERROR");
     console.log(e);
