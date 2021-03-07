@@ -6,6 +6,16 @@ const guildId = [
     token: "WfDRZbdfQwSTXwDmmEQi3Q",
     roleId: "814362458512162817"
   },
+
+  {
+    prefixo: "[W2]",
+    name: "wada2",
+    apelido1: "wadawell2",
+    apelido2: "w2",
+    apelido3: "wada22",
+    token: "C3BZuH7KQ3KLnmE5w7wtPw",
+    roleId: "817213613957316648"
+  },
   {
     prefixo: "[A TROPA]",
     name: "tropa",
@@ -57,15 +67,6 @@ const guildId = [
     roleId: "816321954151530567"
   },
 
-  {
-    prefixo: "[W2]",
-    name: "wada2",
-    apelido1: "wadawell2",
-    apelido2: "w2",
-    apelido3: "wada22",
-    token: "C3BZuH7KQ3KLnmE5w7wtPw",
-    roleId: "817213613957316648"
-  },
   
 ]
 

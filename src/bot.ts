@@ -181,7 +181,12 @@ client.on("message", async (discord) => {
 
               await discord?.member?.setNickname(guildPrefix + " " + pessoa).catch((e)=> {
                 isSetNameOk = false
-                discord.channel.send("Permissao insuficiente")
+
+                console.log(color.BgRed, "Permissão insuficiente para cadastrar @" + pessoa );
+                embed = new MessageEmbed()
+                .setTitle('Permissão insuficiente. ')
+                .setColor(0xff0000)
+                discord.channel.send(embed)
                 return false
               });
 
