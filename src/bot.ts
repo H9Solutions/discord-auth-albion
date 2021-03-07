@@ -1,22 +1,17 @@
-import  { Client, Message  } from "discord.js";
-const client = new Client();
-import fetch from "node-fetch";
+import  { Client, Message, MessageEmbed  } from "discord.js";
+import handleDeleteMembers, { MembersDataBase } from "./handleSignedMembers"
 import { commandList, guildIdList, guildId } from "./allianceGuilds";
+import { apiBaseUrl, discordKey, prefix } from "../configuracao";
 import db from "./database/connection"
-import handleDeleteMembers, {MembersDataBase} from "./handleSignedMembers"
+import fetch from "node-fetch";
 import color from "./console"
-import {
-  apiBaseUrl,
-  discordGuildID,
-  discordKey,
-  prefix,
-} from "../configuracao";
 
-
+const client = new Client();
+let embed
 client.on("ready", async () => {
   console.log(`Logged in as ${client?.user?.tag}!`);
 
- // await handleDeleteMembers()
+  //await handleDeleteMembers()
 
   setTimeout(async () => {
     await handleDeleteMembers()
@@ -95,7 +90,10 @@ const loadGuildInfo = (guildId: any, splited: string[]): any => {
   })
   return __return
 }
-
+client.on("guildMemberRemove", (member) => {
+  console.log("Esse membro saiu")
+  console.log(member)
+})
 client.on("message", async (discord) => {
 
   try {
@@ -107,32 +105,56 @@ client.on("message", async (discord) => {
 
     let msg = discord.content;
     let splited = msg.split(" ");
-    let command = splited[0].substr(1, splited[0].length);
+    let command = splited[0]?.substr(1, splited[0].length).toUpperCase();
     let pessoa = splited[1];
 
     if (pessoa == "" || pessoa == undefined) {
-      discord.channel.send(
-        "Insira o nome da guild. Guilds disponiveis " + guildIdList.join(", ")
-      )
+      embed = new MessageEmbed()
+      .setTitle('Erro')
+      .setColor(0xff0000)
+      .setDescription('Insira corretamente o nome da guild. Disponíveis: \n**' + guildIdList.join("**, **") + "**\n\n" 
+      + `**Exemplo:**  !register TheWuiu wada`
+      );
+
+      discord.channel.send(embed)
       return;
     }
 
     if (await isRegistered(pessoa?.toUpperCase())) {
-      discord.channel.send("Tô sentindo o cheiro de spy safado...");
+      
+      embed = new MessageEmbed()
+      // Set the title of the field
+      .setTitle(":face_with_symbols_over_mouth::face_with_symbols_over_mouth: Spy safado! :face_with_symbols_over_mouth::face_with_symbols_over_mouth:")
+      .setColor(0xff0000)
+      .setDescription(
+        `:police_officer::hand_splayed: Parado aí, agente do Moroni.\n` +
+        `Por favor, a wadawell recruta? :scream:\n` +
+        `:police_officer::cucumber: Vou pranta a porra em você`
+      
+      );
+
+      discord.channel.send(embed)
+
       return false;
     }
 
     let {guildToken, guildPrefix, guildRoleId} = loadGuildInfo(guildId, splited)
 
-    if (!guildToken || guildToken == "") {
-      discord.channel.send(
-        "Insira o nome da guild. Guilds disponiveis " + guildIdList.join(", ")
-      )
+    if (!guildToken || guildToken == "" || guildToken == undefined || guildToken == null)  {
+
+      embed = new MessageEmbed()
+        .setTitle('Erro')
+        .setColor(0xff0000)
+        .setDescription('Insira corretamente o nome da guild. Disponíveis: \n**' + guildIdList.join("**, **") + "**\n\n" 
+        + `**Exemplo:**  !register TheWuiu wada`
+      );
+
+      discord.channel.send(embed)
       return
     }
 
     switch (command) {
-      case "register":
+      case "REGISTER":
         try {
           discord.channel.send("Aguarde, estamos verificando. Poderá levar alguns minutos...")
           const response = await fetch(
@@ -155,8 +177,15 @@ client.on("message", async (discord) => {
 
               console.log(color.yellowN, `Membro ${pessoa} sendo registrado. discordId:  ${authorId}`);
 
-              discord?.member?.setNickname(guildPrefix + " " + pessoa);
+              let isSetNameOk = true
 
+              await discord?.member?.setNickname(guildPrefix + " " + pessoa).catch((e)=> {
+                isSetNameOk = false
+                discord.channel.send("Permissao insuficiente")
+                return false
+              });
+
+              if (!isSetNameOk) return false 
               //RECEBE PERMISSAO DA GUILD REFERENTE
               const guildRoleIdResponse = await member?.roles.add(guildRoleId);
               //RECEBE PERMISSAO DA ALIANCA
@@ -171,7 +200,13 @@ client.on("message", async (discord) => {
               )
 
               console.log(color.cyanN, `Membro ${pessoa} registrado. discordId:  ${authorId}`);
-              discord.channel.send("Seja bem vindo " + pessoa + ".")
+
+              embed = new MessageEmbed()
+              .setTitle("Seja bem vindo " + pessoa + ".")
+              .setColor(0x22bb33)
+  
+
+              discord.channel.send(embed)
 
             } catch (e) {
               
@@ -179,20 +214,39 @@ client.on("message", async (discord) => {
       
             }
        
-          } else discord.channel.send("N encontrei ngm")
+          } else {
+            embed = new MessageEmbed()
+            .setTitle('Registro não encontrado')
+            .setColor(0xff0000)
+            .setDescription('Verifique se o formato está correto. Guilds disponíveis: \n**' + guildIdList.join("**, **") + "**\n\n" 
+            + `**Exemplo:**  !register TheWuiu wada`
+            
+            );
+    
+            discord.channel.send(embed)
+          }
         } catch (e) {
           console.log("RESPONSE ERROR, TRATAR DEPOIS");
-          console.log(e);
+          
+          embed = new MessageEmbed()
+          .setTitle('Erro inesperado.')
+          .setColor(0xff0000)
+          .setDescription('Verifique se o formato está correto. Guilds disponíveis: \n**' + guildIdList.join("**, **") + "**\n\n" 
+          + `**Exemplo:**  !register TheWuiu wada`
+          
+          );
+
+
         }
 
         break;
-      case "listRoles":
+      case "LISTROLES":
         console.log(discord?.guild?.roles);
         break;
-      case "listkick":
+      case "LISTKICK":
 
         break
-      case "clean":
+      case "CLEAN":
         /**
          * 
          * N'AO SEI OQ TO FAZENDO
