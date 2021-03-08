@@ -4,9 +4,9 @@
   "main": "index.js",
   "desciption": "Auth wadawell bot",
   "scripts": {
-    "test": "tsnd  ./src/bot.ts",
-    "dev": "tsnd --transpile-only --ignore-watch node_modules --respawn ./src/bot.ts",
-    "start": "ts-node ./src/bot.ts",
+    "test": "tsnd  ./index.ts",
+    "dev": "tsnd --transpile-only --ignore-watch node_modules --respawn ./index.ts",
+    "start": "ts-node ./index.ts",
     "knex:migrate": "knex --knexfile knexFile.ts migrate:latest",
     "knex:migrate:rollback": "knex --knexfile knexFile.ts migrate:rollback"
   },
@@ -33,6 +33,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "discord.js": "^12.5.1",
+    "express": "^4.17.1",
     "knex": "^0.21.2",
     "multer": "^1.4.2",
     "node-fetch": "^2.6.1",

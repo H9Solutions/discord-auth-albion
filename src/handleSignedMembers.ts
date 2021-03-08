@@ -2,6 +2,7 @@ import { guildId } from "./allianceGuilds";
 import db from "./database/connection"
 import fetch from "node-fetch";
 import color from "./console" 
+import Register from "./controllers/Register"
 
 interface ResponseAlbion {
   Name: string
@@ -17,25 +18,19 @@ export interface MembersDataBase {
   guildName: string 
   guildId: string
 }
-const updateDatabase = async (registrado: MembersDataBase) => {
-  await db("members")
-    .update({status: 0})
-    .where("nome" , "=" , registrado.nome.toUpperCase())
-    .where("id" , "=" , registrado.id)
 
-}
 const handleDeleteMembers = async () => {
 
   for (const i in guildId) {
+
     const registrados = await db("members")
       .where("guildName" , "=", guildId[i].prefixo)
 
-    console.log(color.yellowN, `Requisitando a guild ${guildId[i].prefixo}`)
     
     const response = await fetch(`https://gameinfo.albiononline.com/api/gameinfo/guilds/${guildId[i].token}/members`)
     const data = await response.json()
     
-    console.log(color.cyanN, `${guildId[i].prefixo} completa`)
+    console.log(color.cyan,`Requisitando a guild ${guildId[i].prefixo} - COMPLETO`)
     
     registrados.forEach((registrado: MembersDataBase) => {
 
@@ -48,7 +43,7 @@ const handleDeleteMembers = async () => {
       })
 
       if (!isMemberStillAlliance) {
-        updateDatabase(registrado)
+        Register.update(registrado)
       }
 
     })

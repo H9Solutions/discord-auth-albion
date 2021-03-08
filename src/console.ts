@@ -1,7 +1,9 @@
 export default{
-  yellowN: '\x1b[33m%s\x1b[0m',
-  cyanN: '\x1b[36m%s\x1b[0m',
-  
+  yellow: '\x1b[33m%s\x1b[0m',
+  cyan: '\x1b[36m%s\x1b[0m',
+  purple: "\x1b[35m%s\x1b[0m",
+  blue: "\x1b[1m%s\x1b[0m",
+
   Reset: "\x1b[0m",
   Bright: "\x1b[1m",
   Dim: "\x1b[2m",
@@ -15,7 +17,6 @@ export default{
   FgGreen: "\x1b[32m",
   FgYellow: "\x1b[33m",
   FgBlue: "\x1b[34m",
-  FgMagenta: "\x1b[35m",
   FgCyan: "\x1b[36m",
   FgWhite: "\x1b[37m",
   

@@ -46,13 +46,6 @@ const guildId = [
     roleId: "814363291010596915"
   },
   {
-    prefixo: "[HZ]",
-    name: "hangerz",
-    apelido1: "hz",
-    token: "q6NWJTLNQlO04UtWpd8jQg",
-    roleId: "815010317338804225"
-  },
-  {
     prefixo: "[PND]",
     name: "pandora",
     apelido1: "pnd",
@@ -70,18 +63,10 @@ const guildId = [
   
 ]
 
-const commandList = [
-  "register",
-  "listRoles",
-  "listkick",
-  "clean"
-]
-
 
 const guildIdList = guildId.map(guild => guild.name)
 
 export {
-  commandList,
   guildId,
   guildIdList
 }
